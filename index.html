@@ -195,6 +195,14 @@ label{font-size:12px;font-weight:600;color:var(--mu)}
 .lgp{width:72px;height:72px;border:1px dashed #B7D3C0;border-radius:14px;background:var(--soft);display:grid;place-items:center;color:var(--mu);font-size:11px;overflow:hidden}
 .lgp img{width:100%;height:100%;object-fit:contain}
 .flt:empty{display:none}
+/* bottom tab bar (compact) */
+#nav{position:fixed;top:auto;bottom:0;left:0;right:0;z-index:6;gap:2px;padding:3px max(6px,calc((100% - 1040px)/2 + 6px)) calc(3px + env(safe-area-inset-bottom,0px));border-bottom:0;border-top:1px solid var(--bd);box-shadow:0 -2px 10px rgba(0,0,0,.08)}
+#nav button{min-height:38px;flex-direction:column;gap:1px;padding:3px 2px;font-size:9.5px;border-radius:8px}
+#nav button svg{width:16px;height:16px}
+@media(min-width:640px){#nav button{flex-direction:row;gap:6px;min-height:34px;font-size:12px;padding:4px 8px}#nav button svg{width:16px;height:16px}}
+main{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
+.fab{bottom:calc(64px + env(safe-area-inset-bottom,0px))}
+#toast{bottom:calc(130px + env(safe-area-inset-bottom,0px))}
 </style></head><body><header class="top"><div class="topin"><div class="hd"><div class="brand"><span class="logo"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10Z"/><path d="M2 21c0-3 1.9-5.5 6-7"/></svg></span><div class="bt"><h1 id="ttl"></h1><div class="tag">Landscaping · Home Gardening · Rooftop Gardens</div></div></div><div class="hr"><button class="gear" id="gear" aria-label="Settings">⚙</button></div></div></div></header>
 <nav id="nav" aria-label="Main sections"></nav>
 <main>
@@ -209,7 +217,7 @@ label{font-size:12px;font-weight:600;color:var(--mu)}
 <script>
 const WS=["Not started","In progress","On hold","Completed"];
 const IS=["Not sent","Sent – pending","Processing","Paid"];
-const DEF={appName:"GTG Paradise",labels:{work:"Project",cust:"Customers",money:"Money",inv:"Invoices",act:"Project Activity"},
+const DEF={appName:"GTG Paradise",labels:{cust:"Customers",work:"Project",money:"Money",inv:"Invoices",act:"Project Activity"},
  add:{title:"New job",btn:"Add job",num:"Job number (auto)",name:"Job name",location:"Location",contact:"Contact",email:"Email",source:"Lead source",status:"Status",note:"Note"},
  mode:"light",logo:"",accent:"#0D9488",bright:100,cats:["Materials","Travel","Labour","Tools","Food","Rent","Other","Invoice payment"]};
 const ACCENTS=["#0f766e","#15803d","#0e7490","#2563eb","#7c3aed","#c2410c"];
@@ -475,7 +483,7 @@ function vAct(){
     +`<div class="sh">Photos &amp; Notes</div>${cards?`<div class="pgrid">${cards}</div>`:'<div class="empty" style="padding:8px">No photos or notes yet.</div>'}`;
 }
 /* ===== Supabase ===== */
-const SB_URL="",SB_KEY="";   // optional: paste your Supabase project URL and anon key here
+const SB_URL="https://hkddjhkljqxovxuljcug.supabase.co",SB_KEY="sb_publishable_QCMLLqGQq6hHlpeEUFBTsg_gtfafqDZ";   // Supabase project URL and publishable key
 const BUCKET="project-photos",SB_LIB="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js";
 let SBC={url:SB_URL,key:SB_KEY};
 try{const c=JSON.parse(localStorage.getItem("wmt_sb")||"null");if(c&&c.url&&c.key&&!(SB_URL&&SB_KEY))SBC=c}catch(e){}
@@ -634,7 +642,7 @@ async function saveSettings(){
   if(!await ask("Save these settings?","Yes, save"))return;
   D.cats.forEach(c=>{const n=c.n.trim();if(c.o&&n&&c.o!==n)S.tx.forEach(t=>{const a=cl(t);if(a.includes(c.o))t.cat=a.map(x=>x===c.o?n:x)})});
   const add={};Object.keys(DEF.add).forEach(k=>add[k]=(D.add[k]||"").trim()||DEF.add[k]);
-  S.cfg={appName:(D.appName||"").trim()||DEF.appName,labels:{work:w("work"),cust:w("cust"),money:w("money"),inv:w("inv"),act:w("act")},add,logo:D.logo||"",mode:"light",accent:DEF.accent,bright:100,cats};
+  S.cfg={appName:(D.appName||"").trim()||DEF.appName,labels:{cust:w("cust"),work:w("work"),money:w("money"),inv:w("inv"),act:w("act")},add,logo:D.logo||"",mode:"light",accent:DEF.accent,bright:100,cats};
   save();closeSettings();
 }
 
@@ -861,7 +869,7 @@ function render(){
   const L=S.cfg.labels;
   $("#ttl").textContent=S.cfg.appName;
   $(".logo").innerHTML=S.cfg.logo?`<img src="${esc(S.cfg.logo)}" alt="">`:LOGO0;
-  $("#nav").innerHTML=Object.keys(L).map(k=>`<button data-tab="${k}" class="${k===tab?"on":""}"${k===tab?' aria-current="page"':""}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[k]||""}</svg><span>${esc(L[k])}</span></button>`).join("");
+  $("#nav").innerHTML=["cust","work","money","inv","act"].filter(k=>k in L).map(k=>`<button data-tab="${k}" class="${k===tab?"on":""}"${k===tab?' aria-current="page"':""}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[k]||""}</svg><span>${esc(L[k])}</span></button>`).join("");
   $("#fab").style.display=tab==="settings"?"none":"";
   $("#fab").setAttribute("aria-label",{work:"Add project",money:"Add money entry",inv:"Add invoice",act:"Add activity",cust:"Add customer"}[tab]||"Add");
   renderFlt();renderView();hlRow();
