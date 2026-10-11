@@ -196,6 +196,9 @@ label{font-size:12px;font-weight:600;color:var(--mu)}
 main{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
 .fab{bottom:calc(64px + env(safe-area-inset-bottom,0px))}
 #toast{bottom:calc(130px + env(safe-area-inset-bottom,0px))}
+.ib{display:inline-flex;align-items:center;justify-content:center}.ib svg{display:block}
+.seg{display:flex;gap:6px;margin-bottom:8px}.seg button{flex:1;min-height:40px;border:1px solid var(--bd);border-radius:10px;background:var(--soft);color:var(--brand);font-weight:600;font-size:13px}.seg button.on{background:var(--a);border-color:var(--a);color:#fff}
+.p91{display:flex;align-items:stretch}.p91 span{display:grid;place-items:center;padding:0 12px;background:var(--soft);border:1px solid #C9DACF;border-right:0;border-radius:10px 0 0 10px;font-weight:600;color:var(--brand)}.p91 input{border-radius:0 10px 10px 0;min-width:0}.p91.bad span,.p91.bad input{border-color:var(--rd)}
 </style></head><body><header class="top"><div class="topin"><div class="hd"><div class="brand"><span class="logo"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10Z"/><path d="M2 21c0-3 1.9-5.5 6-7"/></svg></span><div class="bt"><h1 id="ttl"></h1><div class="tag">Landscaping · Home Gardening · Rooftop Gardens</div></div></div><div class="hr"><button class="gear" id="gear" aria-label="Settings">⚙</button></div></div></div></header>
 <nav id="nav" aria-label="Main sections"></nav>
 <main>
@@ -216,6 +219,8 @@ const DEF={appName:"GTG Paradise",labels:{cust:"Customers",work:"Project",money:
 const mergeCfg=c=>{const r={...DEF,...(c||{}),labels:{...DEF.labels,...(c&&c.labels)},add:{...DEF.add,...(c&&c.add)},cats:c&&c.cats&&c.cats.length?c.cats:[...DEF.cats]};delete r.labels.cmp;if(r.labels.work==="Work")r.labels.work="Project";r.mode="light";r.accent=DEF.accent;r.bright=100;return r};
 let S={jobs:[],customers:[],tx:[],inv:[],acts:[],cfg:mergeCfg()},tab="cust",docRef=null,timer=null,D=null;
 const $=s=>document.querySelector(s);
+const SV=p=>`<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
+const ICE=SV('<path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/>'),ICD=SV('<path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M10 11v6"/><path d="M14 11v6"/>');
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const num=n=>(+n||0).toLocaleString(undefined,{maximumFractionDigits:2});
 const uid=()=>Math.random().toString(36).slice(2,9);
@@ -235,7 +240,7 @@ function updDD(dd){const a=[...dd.querySelectorAll("input:checked")].map(i=>i.va
 const jobOpts=(none,sel)=>(none?'<option value="">— none —</option>':"")+S.jobs.map(j=>`<option value="${j.id}" ${j.id===sel?"selected":""}>${j.num}. ${esc(j.name)}</option>`).join("");
 function FLD(){const A=S.cfg.add;return{
  jobs:[["name",A.name,"text"],["customer","Customer","cust"],["location",A.location,"text"],["contact",A.contact,"text"],["email",A.email,"email"],["source",A.source,"text"],["status",A.status,"select",WS],["pending","Pending work type","text"],["next","Next visit","date"],["note",A.note,"area"]],
- customers:[["name","Name","text"],["phone","Phone","text"],["whatsapp","WhatsApp","text"],["email","Email","email"],["address","Address","area"],["type","Customer type","select",CT],["notes","Notes","area"]],
+ customers:[["name","Name","text"],["phone","Contact number","p91"],["whatsapp","WhatsApp number","p91"],["email","Email","email"],["address","Address","area"],["type","Customer type","select",CT],["notes","Notes","area"],["active","Active customer","bool"]],
  tx:[["type","Type","select",["Expense","Income"]],["amt","Amount","number"],["cat","Category","cat"],["job","Linked job","job"],["date","Date","date"],["note","Note","text"]],
  inv:[["job","Job","jobreq"],["amt","Invoice amount","number"],["status","Status","select",IS],["ref","Invoice no. / note","text"]]}}
 
@@ -309,6 +314,8 @@ function editForm(kind,item){
     else if(t==="jobreq")inp=`<select id="f_${k}">${jobOpts(false,val)}</select>`;
     else if(t==="cust")inp=`<select id="f_${k}"><option value="">— none —</option>${S.customers.map(c=>`<option value="${c.id}" ${c.id===val?"selected":""}>${esc(c.name)}</option>`).join("")}</select>`;
     else if(t==="area")inp=`<textarea id="f_${k}" rows="5">${esc(val)}</textarea>`;
+    else if(t==="p91")inp=`<div class="p91"><span>+91</span><input id="f_${k}" type="tel" inputmode="numeric" data-p91="1" value="${esc(digits(val).slice(-10))}"></div>`;
+    else if(t==="bool")inp=`<label class="ck" style="margin:0"><input id="f_${k}" type="checkbox" ${val!==false?"checked":""}> Active</label>`;
     else inp=`<input id="f_${k}" type="${t}" ${t==="number"?'inputmode="decimal" step="0.01" min="0"':""} value="${esc(val)}" ${dis}>`;
     return`<div class="f"><label>${esc(l)}</label>${inp}</div>`}).join("");
   show(`<h3>Edit</h3>${lock.length?'<div class="mu f">Linked to a paid invoice: amount, type and job follow the invoice.</div>':""}${f}<div class="acts"><button class="btn g" id="no">Cancel</button><button class="btn" id="yes">Save changes</button></div>`);
@@ -316,7 +323,7 @@ function editForm(kind,item){
   $("#yes").onclick=async()=>{
     if(busy)return;
     const nv={};
-    for(const [k,,t] of FLD()[kind]){const el=$("#f_"+k);if(t==="cat"){const c=getChk("f_cat");nv[k]=c.length?c:[catFallback()];continue}if(el.disabled)continue;let x=el.value;
+    for(const [k,,t] of FLD()[kind]){const el=$("#f_"+k);if(t==="cat"){const c=getChk("f_cat");nv[k]=c.length?c:[catFallback()];continue}if(t==="bool"){nv[k]=el.checked;continue}if(t==="p91"){const p=digits(el.value);if(p&&p.length!==10){el.parentNode.classList.add("bad");return toast("Enter exactly 10 digits after +91")}nv[k]=p?"+91"+p:"";continue}if(el.disabled)continue;let x=el.value;
       if(t==="number"){x=parseFloat(x);if(!(x>=0))return toast("Enter a valid amount")}else if(t==="text"||t==="area")x=x.trim();nv[k]=x}
     if((kind==="jobs"||kind==="customers")&&!nv.name)return toast("Name is required");
     busy=true;
@@ -460,12 +467,12 @@ function vAct(){
     <td class="wrap"><b>${esc(a.title)}</b>${np?` <span class="mu">📷${np}</span>`:""}${a.notes?`<div class="mu clamp">${esc(a.notes)}</div>`:""}</td>
     <td><select data-k="acts" data-id="${a.id}" data-set="status">${opts(AST,a.status)}</select></td>
     <td class="wrap">${k?`${esc(k.title)} <span class="mu">${esc(k.date)}</span>`:"—"}</td>
-    <td class="act"><button class="ib" data-act="aedit" data-id="${a.id}" title="Edit">✎</button><button class="ib d" data-act="adel" data-id="${a.id}" title="Delete">✕</button></td></tr>`}).join("");
+    <td class="act"><button class="ib" data-act="aedit" data-id="${a.id}" title="Edit">${ICE}</button><button class="ib d" data-act="adel" data-id="${a.id}" title="Delete">${ICD}</button></td></tr>`}).join("");
   const head=[["Date"],["Work completed / task"],["Status"],["Next planned work"],["Actions","act"]];
   const pn=f.a.filter(x=>x.notes||(x.photos||[]).length).sort((x,y)=>(y.date||"").localeCompare(x.date||""));
   const cards=(J.note?`<div class="card an"><div class="mu">Project note</div><div class="pre">${esc(J.note)}</div></div>`:"")
     +pn.map(a=>`<div class="card an"><div class="row"><b>${esc(a.title)}</b><span class="mu">${esc(a.date)}</span></div>${a.notes?`<div class="pre">${esc(a.notes)}</div>`:""}${ths(a.photos)}</div>`).join("");
-  const head0=`<div class="card" style="padding:8px"><div class="row" style="align-items:center"><button class="btn g sm" data-act="asel" data-pid="">← All projects</button><select id="asw" class="mini">${jobsSorted().map(j=>`<option value="${j.id}" ${j.id===selAct?"selected":""}>${esc(j.num+". "+j.name)}</option>`).join("")}</select></div></div>`;
+  const head0=`<div class="card" style="padding:8px"><div class="row" style="align-items:center"><select id="asw" class="mini">${jobsSorted().map(j=>`<option value="${j.id}" ${j.id===selAct?"selected":""}>${esc(j.num+". "+j.name)}</option>`).join("")}</select></div></div>`;
   return head0+`<div class="pgrid">${aTile(J,false)}</div>`
     +`<div class="card" style="padding:8px 10px"><div class="row" style="align-items:center;justify-content:flex-start;flex-wrap:wrap"><b>Next visit</b><input type="date" class="mini" value="${esc(J.next)}" data-k="jobs" data-id="${J.id}" data-set="next">${dueTag(J.next,J.status)}</div></div>`
     +`<div class="sh">Timetable (${rows.length})</div>${tbl(head,trs,0,"No activities yet. Tap + to add one.","cp")}`
@@ -485,7 +492,7 @@ const okDate=d=>/^\d{4}-\d{2}-\d{2}$/.test(d||"")?d:null;
 const pk=id=>known(id)?id:null;
 function rowsOf(){
   const m=Object.fromEntries(SBT.map(t=>[t,new Map()]));
-  S.customers.forEach(c=>m.customers.set(c.id,{id:c.id,code:c.code||null,name:c.name||"Unnamed",phone:c.phone||"",whatsapp:c.whatsapp||"",email:c.email||"",address:c.address||"",customer_type:CT.includes(c.type)?c.type:"Home",notes:c.notes||""}));
+  S.customers.forEach(c=>m.customers.set(c.id,{id:c.id,code:c.code||null,name:c.name||"Unnamed",phone:c.phone||"",whatsapp:c.whatsapp||"",email:c.email||"",address:c.address||"",customer_type:CT.includes(c.type)?c.type:"Home",notes:c.notes||"",is_active:c.active!==false}));
   S.jobs.forEach(j=>m.projects.set(j.id,{id:j.id,num:Math.max(1,+j.num||1),name:j.name||"Untitled",location:j.location||"",contact:j.contact||"",email:j.email||"",source:j.source||"",status:WS.includes(j.status)?j.status:"Not started",pending:j.pending||"",next_visit:okDate(j.next),note:j.note||"",customer_id:S.customers.some(c=>c.id===j.customer)?j.customer:null}));
   S.inv.forEach(i=>m.invoices.set(i.id,{id:i.id,project_id:pk(i.job),amount:Math.max(0,+i.amt||0),status:IS.includes(i.status)?i.status:"Not sent",ref:i.ref||"",invoice_date:okDate(i.date)||today()}));
   S.acts.forEach(a=>{m.activities.set(a.id,{id:a.id,project_id:pk(a.job),title:a.title||"Untitled",activity_date:okDate(a.date)||today(),status:AST.includes(a.status)?a.status:"Pending",notes:a.notes||"",from_activity:a.from||null});
@@ -525,7 +532,7 @@ async function sbFetch(){
   const st=await SB.client.from("app_settings").select("data").maybeSingle();if(st.error)throw st.error;
   const php={},byAct={};ph.sort((a,b)=>a.position-b.position).forEach(r=>{php[r.id]=r.storage_path;(byAct[r.activity_id]=byAct[r.activity_id]||[]).push(r.id)});
   return{php,cfg:st.data?st.data.data:null,
-    customers:cu.filter(r=>!r.merged_into).map(r=>({id:r.id,code:r.code||"",name:r.name,phone:r.phone||"",whatsapp:r.whatsapp||"",email:r.email||"",address:r.address||"",type:r.customer_type||"Home",notes:r.notes||""})),
+    customers:cu.filter(r=>!r.merged_into).map(r=>({id:r.id,code:r.code||"",name:r.name,phone:r.phone||"",whatsapp:r.whatsapp||"",email:r.email||"",address:r.address||"",type:r.customer_type||"Home",notes:r.notes||"",active:r.is_active!==false})),
     jobs:pj.map(r=>({id:r.id,num:r.num,name:r.name,location:r.location,contact:r.contact,email:r.email,source:r.source,status:r.status,pending:r.pending,next:r.next_visit||"",note:r.note,customer:r.customer_id||""})),
     inv:iv.map(r=>({id:r.id,job:r.project_id||"",amt:+r.amount,status:r.status,ref:r.ref,date:r.invoice_date})),
     acts:ac.map(r=>({id:r.id,job:r.project_id||"",title:r.title,date:r.activity_date,status:r.status,notes:r.notes,photos:byAct[r.id]||[],created:Date.parse(r.created_at)||0,...(r.from_activity?{from:r.from_activity}:{})})),
@@ -620,7 +627,7 @@ function vSet(){
   <div class="acts"><button class="btn g sm" data-act="sbIn">Sign in</button><button class="btn g sm" data-act="sbOut">Sign out</button></div>
   <div class="mu" style="margin-top:8px">Run supabase-schema.sql in your Supabase SQL editor first. Cloud saving works in the downloaded HTML file; the claude.ai hosted view blocks outside connections.</div>`)}
   ${sec("bk","Backup & restore",`<div class="mu f">Download a copy of all jobs, money, invoices and activities (photos are not included).</div><div class="acts"><button class="btn sm" data-act="bkOut">Download backup</button><button class="btn g sm" data-act="bkIn">Restore</button></div><input type="file" id="bkf" accept="application/json,.json" hidden>`)}
-  ${sec("cats","Money categories",D.cats.map((c,i)=>`<div class="row f" style="align-items:center"><input data-ci="${i}" value="${esc(c.n)}"><button class="ib d" data-act="delCat" data-i="${i}">✕</button></div>`).join("")+`<div class="row" style="align-items:center"><input id="newcat" placeholder="New category"><button class="btn sm" data-act="addCat">Add</button></div>`)}
+  ${sec("cats","Money categories",D.cats.map((c,i)=>`<div class="row f" style="align-items:center"><input data-ci="${i}" value="${esc(c.n)}"><button class="ib d" data-act="delCat" data-i="${i}" title="Delete">${ICD}</button></div>`).join("")+`<div class="row" style="align-items:center"><input id="newcat" placeholder="New category"><button class="btn sm" data-act="addCat">Add</button></div>`)}
   <div class="acts"><button class="btn g" data-act="setCancel">Cancel</button><button class="btn" data-act="setSave">Save settings</button></div>`;
 }
 async function saveSettings(){
@@ -643,6 +650,7 @@ const actions={
   addProj(){addJobForm()},
   addCust(){addCustForm()},
   csel(el){selCust=el.dataset.id||null;render()},
+  cview(el){cview=el.dataset.v;render()},
   cjob(el){addJobForm(el.dataset.id)},
   logoPick(){$("#logof").click()},
   logoClear(){D.logo="";render()},
@@ -684,11 +692,12 @@ const actions={
 document.addEventListener("click",e=>{
   document.querySelectorAll("details.dd[open]").forEach(d=>{if(!d.contains(e.target))d.open=false});
   const t=e.target.closest("[data-act]");if(t){actions[t.dataset.act](t);return}
-  const n=e.target.closest("[data-tab]");if(n){if(tab==="settings"){apply(S.cfg);D=null}tab=n.dataset.tab;render()}
+  const n=e.target.closest("[data-tab]");if(n){if(tab==="settings"){apply(S.cfg);D=null}tab=n.dataset.tab;selCust=selProj=selAct=null;cview="active";cq="";render();window.scrollTo(0,0)}
 });
 document.addEventListener("input",e=>{
   const t=e.target;if(t.classList)t.classList.remove("bad");
   if(t.id==="cq"){cq=t.value;const l=$("#clist");if(l)l.innerHTML=custList();return}
+  if(t.dataset.p91){const d=digits(t.value).slice(0,10);if(t.value!==d)t.value=d;t.parentNode.classList.remove("bad");return}
   if(t.dataset.sb){SBD[t.dataset.sb]=t.value;return}
   if(t.dataset.ci!==undefined){D.cats[+t.dataset.ci].n=t.value;return}
   if(t.dataset.d)setPath(D,t.dataset.d,t.value)
@@ -708,6 +717,7 @@ document.addEventListener("keydown",e=>{
 document.addEventListener("change",async e=>{
   const t=e.target;
   if(t.id==="bkf"){restoreBackup(t);return}
+  if(t.id==="c_same"){$("#c_wawrap").style.display=t.checked?"none":"";return}
   if(t.id==="logof"){const f=t.files[0];t.value="";if(f&&D)readLogo(f).then(d=>{D.logo=d;render()}).catch(()=>toast("Could not read that image"));return}
   const dd=t.closest&&t.closest("details.dd");if(dd){updDD(dd);dd.classList.remove("bad");return}
   if(t.id==="asw"){selAct=t.value||null;render();return}
@@ -746,7 +756,7 @@ function pFin(pid){
   const income=sumA(tx.filter(t=>t.type==="Income")),exp=sumA(tx.filter(t=>t.type==="Expense")),invd=sumA(inv),paid=sumA(inv.filter(i=>i.status==="Paid"));
   return{tx,inv,income,exp,net:income-exp,invd,paid,pend:invd-paid,diff:invd-exp};
 }
-const acBtns=(k,id,noDel)=>`<div class="ac"><button class="ib" data-act="edit" data-k="${k}" data-id="${id}" title="Edit">✎</button>${noDel?"":`<button class="ib d" data-act="del" data-k="${k}" data-id="${id}" title="Delete">✕</button>`}</div>`;
+const acBtns=(k,id,noDel)=>`<div class="ac"><button class="ib" data-act="edit" data-k="${k}" data-id="${id}" title="Edit">${ICE}</button>${noDel?"":`<button class="ib d" data-act="del" data-k="${k}" data-id="${id}" title="Delete">${ICD}</button>`}</div>`;
 function vWork(){
   const list=S.jobs.filter(j=>inF(j.next)).sort((a,b)=>(a.next?0:1)-(b.next?0:1)||(a.next||"").localeCompare(b.next||"")||(+a.num||0)-(+b.num||0));
   const open=list.filter(j=>j.status!=="Completed").length;
@@ -777,7 +787,7 @@ function invTile(i){
   return`<div class="pc" data-rid="${i.id}"><div class="L"><span class="pill">Invoice</span><b class="pn">${num(i.amt)}</b><div class="mu ell2" title="${esc(i.ref)}">${esc(i.ref)||"—"}</div></div>
   <div class="R">${acBtns("inv",i.id)}<div class="mu">${esc(i.date||"—")}</div><select data-k="inv" data-id="${i.id}" data-set="status">${opts(IS,i.status)}</select></div></div>`}
 function projHead(){
-  return`<div class="card" style="padding:8px"><div class="row" style="align-items:center"><button class="btn g sm" data-act="selp" data-pid="">← All projects</button><select id="psw" class="mini">${projs().map(p=>`<option value="${p.id}" ${p.id===selProj?"selected":""}>${esc(p.id==="__none"?p.name:p.num+". "+p.name)}</option>`).join("")}</select></div></div>`}
+  return`<div class="card" style="padding:8px"><div class="row" style="align-items:center"><select id="psw" class="mini">${projs().map(p=>`<option value="${p.id}" ${p.id===selProj?"selected":""}>${esc(p.id==="__none"?p.name:p.num+". "+p.name)}</option>`).join("")}</select></div></div>`}
 const grid=(a,fn,empty)=>a.length?`<div class="pgrid">${a.map(fn).join("")}</div>`:`<div class="empty">${empty}</div>`;
 const NONE="No records found. Tap + to add one.";
 const CT=["Home","Rooftop","Commercial","Other"];
@@ -787,32 +797,44 @@ const AS='style="flex:1;display:grid;place-items:center;text-align:center;text-d
 const custJobs=id=>S.jobs.filter(j=>j.customer===id);
 function custFin(id){const js=custJobs(id),ids=new Set(js.map(j=>j.id)),iv=S.inv.filter(i=>ids.has(i.job)),t=sumA(iv),p=sumA(iv.filter(i=>i.status==="Paid"));return{n:js.length,t,due:t-p}}
 function dupOf(r){return S.customers.find(c=>c.id!==r.id&&((digits(r.phone).length>=7&&digits(c.phone)===digits(r.phone))||(r.email&&c.email&&c.email.toLowerCase()===r.email.toLowerCase())))}
+let cview="active";
+const isAct=c=>c.active!==false;
 function custList(){
   const q=cq.trim().toLowerCase(),qd=digits(cq);
-  const a=S.customers.filter(c=>!q||[c.name,c.code,c.email,c.address].some(x=>String(x||"").toLowerCase().includes(q))||(qd&&digits(c.phone).includes(qd))||S.jobs.some(j=>j.customer===c.id&&String(j.location||"").toLowerCase().includes(q))).sort((x,y)=>x.name.localeCompare(y.name));
   if(!S.customers.length)return ES("No customers yet","Add your customers once, then link every project, invoice and visit to them.","cust");
-  return a.length?`<div class="pgrid">${a.map(c=>{const f=custFin(c.id);return`<div class="pc click" data-act="csel" data-id="${c.id}"><div class="L"><span class="pill">${esc(c.code||c.type)}</span><b class="pn" title="${esc(c.name)}">${esc(c.name)}</b><div class="mu ell2">📞 ${esc(c.phone)||"—"}</div></div><div class="R">${mrow("Jobs",f.n)}${mrow("Outstanding",num(f.due),f.due>0?"am":"")}</div></div>`}).join("")}</div>`:'<div class="empty">No customer matches your search.</div>';
+  const a=S.customers.filter(c=>isAct(c)===(cview==="active")).filter(c=>!q||[c.name,c.code,c.email,c.address].some(x=>String(x||"").toLowerCase().includes(q))||(qd&&digits(c.phone).includes(qd))||S.jobs.some(j=>j.customer===c.id&&String(j.location||"").toLowerCase().includes(q))).sort((x,y)=>x.name.localeCompare(y.name));
+  return a.length?`<div class="pgrid">${a.map(c=>`<div class="pc click" data-act="csel" data-id="${c.id}" data-rid="${c.id}">
+  <div class="L"><span class="pill">${esc(c.code||c.type)}</span><b class="pn" title="${esc(c.name)}">${esc(c.name)}</b><div class="mu ell2" title="${esc(c.address)}">📍 ${esc(c.address)||"—"}</div></div>
+  <div class="R">${acBtns("customers",c.id)}<div class="mu ell2" title="${esc(c.phone)}">📞 ${esc(c.phone)||"—"}</div></div></div>`).join("")}</div>`:`<div class="empty">${q?"No customer matches your search.":"No "+cview+" customers."}</div>`;
 }
 function vCust(){
   const C=S.customers.find(c=>c.id===selCust);
-  if(!C)return`<div class="card" style="padding:8px"><input id="cq" class="mini" style="width:100%" type="search" placeholder="Search name, phone, ID or address" value="${esc(cq)}"></div><div id="clist">${custList()}</div>`;
+  if(!C){const na=S.customers.filter(isAct).length,ni=S.customers.length-na;
+    return`<div class="card" style="padding:8px">${S.customers.length?`<div class="seg"><button class="${cview==="active"?"on":""}" data-act="cview" data-v="active">Active (${na})</button><button class="${cview==="inactive"?"on":""}" data-act="cview" data-v="inactive">Inactive (${ni})</button></div>`:""}<input id="cq" class="mini" style="width:100%" type="search" placeholder="Search name, phone, ID or address" value="${esc(cq)}"></div><div id="clist">${custList()}</div>`}
   const f=custFin(C.id),js=custJobs(C.id).sort((a,b)=>(+b.num||0)-(+a.num||0)),wa=digits(C.whatsapp||C.phone);
-  return`<div class="card" style="padding:8px"><button class="btn g sm" data-act="csel" data-id="">← All customers</button></div>
-  <div class="card"><div class="row"><div><span class="pill">${esc(C.code||"New")}</span> <span class="pill">${esc(C.type)}</span><h2 style="font-size:18px;margin:8px 0 4px;color:var(--brand)">${esc(C.name)}</h2></div>${acBtns("customers",C.id)}</div>
+  return`<div class="card"><div class="row"><div><span class="pill">${esc(C.code||"New")}</span> <span class="pill">${esc(C.type)}</span>${isAct(C)?"":' <span class="pill rd">Inactive</span>'}<h2 style="font-size:18px;margin:8px 0 4px;color:var(--brand)">${esc(C.name)}</h2></div>${acBtns("customers",C.id)}</div>
   <div class="mu">📞 ${esc(C.phone)||"—"} · ✉ ${esc(C.email)||"—"}</div><div class="mu">📍 ${esc(C.address)||"—"}</div>${C.notes?`<div class="pre" style="margin-top:6px">${esc(C.notes)}</div>`:""}
   <div class="acts">${C.phone?`<a class="btn sm" ${AS} href="tel:${esc(C.phone)}">Call</a>`:""}${wa?`<a class="btn g sm" ${AS} href="https://wa.me/${wa}" target="_blank" rel="noopener">WhatsApp</a>`:""}<button class="btn g sm" data-act="cjob" data-id="${C.id}">+ ${esc(S.cfg.labels.work)}</button></div></div>
   <div class="stats">${stat(f.n,"Jobs","","tot")}${stat(num(f.t),"Invoiced")}${stat(num(f.due),"Outstanding",f.due>0?"am":"","opn")}</div>
   <div class="sh">${esc(S.cfg.labels.work)}s (${js.length})</div>${grid(js,j=>`<div class="pc"><div class="L"><span class="pill">No. ${esc(j.num)}</span><b class="pn">${esc(j.name)}</b><span class="bdg ${stCls(j.status)}">${esc(j.status)}</span></div><div class="R"><div class="mu ell2">📍 ${esc(j.location)||"—"}</div><div class="mu">Next visit: ${esc(j.next)||"—"}</div></div></div>`,"No projects yet for this customer.")}`;
 }
+const P91=(id)=>`<div class="p91"><span>+91</span><input id="${id}" type="tel" inputmode="numeric" data-p91="1" placeholder="10-digit number" autocomplete="off"></div>`;
 function addCustForm(){
-  show(`<h3>New customer</h3>${F("Name",'<input id="c_name">',1)}${F("Phone",'<input id="c_phone" type="tel" inputmode="tel">')}${F("WhatsApp (if different)",'<input id="c_wa" type="tel" inputmode="tel">')}${F("Email",'<input id="c_email" type="email">')}${F("Address",'<textarea id="c_addr" rows="3"></textarea>')}${F("Customer type",`<select id="c_type">${opts(CT)}</select>`)}${F("Notes",'<textarea id="c_notes" rows="3"></textarea>')}<div class="acts"><button class="btn g" id="no">Cancel</button><button class="btn" id="yes">Add customer</button></div>`);
+  show(`<h3>New customer</h3>${F("Name",'<input id="c_name">',1)}${F("Contact number",P91("c_phone"))}
+  <label class="ck" style="margin:2px 0 10px"><input type="checkbox" id="c_same" checked> WhatsApp number is same as contact number</label>
+  <div id="c_wawrap" style="display:none">${F("WhatsApp number",P91("c_wa"))}</div>
+  ${F("Email",'<input id="c_email" type="email">')}${F("Address",'<textarea id="c_addr" rows="3"></textarea>')}${F("Customer type",`<select id="c_type">${opts(CT)}</select>`)}${F("Notes",'<textarea id="c_notes" rows="3"></textarea>')}
+  <label class="ck" style="margin:2px 0 4px"><input type="checkbox" id="c_active" checked> Active customer</label>
+  <div class="acts"><button class="btn g" id="no">Cancel</button><button class="btn" id="yes">Add customer</button></div>`);
   $("#no").onclick=hide;
   $("#yes").onclick=async()=>{
-    if(busy)return;const name=gv("c_name");if(!need([["c_name",!!name]]))return;
-    const rec={id:uid(),code:nextCode(),name,phone:gv("c_phone"),whatsapp:gv("c_wa"),email:gv("c_email"),address:gv("c_addr"),type:gv("c_type"),notes:gv("c_notes")};
+    if(busy)return;const name=gv("c_name"),same=$("#c_same").checked,p=digits(gv("c_phone")),w=same?p:digits(gv("c_wa"));
+    if(!need([["c_name",!!name]]))return;
+    if(p&&p.length!==10||!same&&w&&w.length!==10){[["c_phone",p],["c_wa",w]].forEach(([id,x])=>{const el=document.getElementById(id);if(el&&x&&x.length!==10)el.parentNode.classList.add("bad")});return toast("Enter exactly 10 digits after +91")}
+    const rec={id:uid(),code:nextCode(),name,phone:p?"+91"+p:"",whatsapp:w?"+91"+w:"",email:gv("c_email"),address:gv("c_addr"),type:gv("c_type"),notes:gv("c_notes"),active:$("#c_active").checked};
     busy=true;
     try{const d=dupOf(rec);if(d&&!await ask("This looks like an existing customer: "+d.name+". Add a new record anyway?","Add anyway"))return;
-      hide();S.customers.push(rec);save();selCust=rec.id;tab="cust";lastAdded=rec.id;render()}finally{busy=false}
+      hide();S.customers.push(rec);save();selCust=rec.id;cview=rec.active?"active":"inactive";tab="cust";lastAdded=rec.id;render()}finally{busy=false}
   };
 }
 const LOGO0=document.querySelector(".logo").innerHTML;
