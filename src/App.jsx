@@ -14,6 +14,7 @@ import './styles/invoices.css';
 import './styles/activity.css';
 import './styles/settings.css';
 import './legacy.css';
+import './styles/visual-refresh.css';
 
 const tabOverrides = [
   CustomersCode,
