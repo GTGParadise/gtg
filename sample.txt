@@ -1,0 +1,7 @@
+GTG Paradise - Sample Text File
+================================
+
+This is a sample TXT file created directly in the GitHub repository.
+
+Project: GTG Paradise
+Repository: https://github.com/GTGParadise/gtg/
