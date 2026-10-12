@@ -8,9 +8,8 @@
   --gtg-ink:#172b22;
   --gtg-muted:#63766a;
 }
-#gtg-legacy-root body,
 #gtg-legacy-root{color:var(--gtg-ink)}
-#gtg-legacy-root body{background:radial-gradient(ellipse at 8% 0%,#e3f3e7 0,transparent 42%),#f5f8f5}
+body{background:radial-gradient(ellipse at 8% 0%,#e3f3e7 0,transparent 42%),#f5f8f5!important}
 #gtg-legacy-root .top{background:linear-gradient(120deg,var(--gtg-forest-deep),var(--gtg-forest) 62%,#216b48);box-shadow:0 5px 18px rgba(16,61,42,.14)}
 #gtg-legacy-root .logo{border-radius:15px;background:#f5fff7;color:var(--gtg-forest);box-shadow:0 4px 12px rgba(0,0,0,.12)}
 #gtg-legacy-root .tag{color:#d9f3e1;letter-spacing:.1px}
