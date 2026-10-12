@@ -71,7 +71,25 @@ body{background:radial-gradient(ellipse at 8% 0%,#e3f3e7 0,transparent 42%),#f5f
   #gtg-legacy-root #nav button{transition:none}
 }
 
-/* Header sign-out action */
-#gtg-legacy-root #signout{margin-left:2px;font-size:20px}
+/* Professional header sign-out action — presentation only */
+#gtg-legacy-root .hr{display:flex;align-items:center;gap:8px}
+#gtg-legacy-root #signout{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  min-height:40px;padding:0 14px;margin-left:2px;border:1px solid rgba(255,255,255,.34);
+  border-radius:12px;background:rgba(255,255,255,.10);color:#f7fff9;
+  font:600 13px/1.1 inherit;letter-spacing:.1px;white-space:nowrap;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);cursor:pointer;
+  transition:background .18s ease,border-color .18s ease,transform .18s ease,box-shadow .18s ease;
+}
+#gtg-legacy-root #signout svg{flex:0 0 auto}
+#gtg-legacy-root #signout span{display:inline}
+#gtg-legacy-root #signout:hover{background:rgba(255,255,255,.20);border-color:rgba(255,255,255,.58);box-shadow:0 4px 12px rgba(0,0,0,.12);transform:translateY(-1px)}
+#gtg-legacy-root #signout:focus-visible{outline:3px solid #c6f6d5;outline-offset:3px}
+#gtg-legacy-root #signout:active{transform:translateY(0)}
 #gtg-legacy-root #signout[hidden]{display:none!important}
-#gtg-legacy-root #signout:hover{background:rgba(255,255,255,.22)}
+@media(max-width:520px){
+  #gtg-legacy-root .hr{gap:6px}
+  #gtg-legacy-root #signout{width:40px;min-width:40px;height:40px;padding:0;border-radius:12px}
+  #gtg-legacy-root #signout span{display:none}
+}
+@media(prefers-reduced-motion:reduce){#gtg-legacy-root #signout{transition:none}}
