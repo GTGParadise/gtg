@@ -70,3 +70,8 @@ body{background:radial-gradient(ellipse at 8% 0%,#e3f3e7 0,transparent 42%),#f5f
 @media(prefers-reduced-motion:reduce){
   #gtg-legacy-root #nav button{transition:none}
 }
+
+/* Header sign-out action */
+#gtg-legacy-root #signout{margin-left:2px;font-size:20px}
+#gtg-legacy-root #signout[hidden]{display:none!important}
+#gtg-legacy-root #signout:hover{background:rgba(255,255,255,.22)}
