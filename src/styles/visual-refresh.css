@@ -93,3 +93,6 @@ body{background:radial-gradient(ellipse at 8% 0%,#e3f3e7 0,transparent 42%),#f5f
   #gtg-legacy-root #signout span{display:none}
 }
 @media(prefers-reduced-motion:reduce){#gtg-legacy-root #signout{transition:none}}
+
+/* Signed-in greeting replaces the former tagline */
+#gtg-legacy-root .tag{font-size:13px;font-weight:600;color:#e2f7e8;letter-spacing:.1px}
