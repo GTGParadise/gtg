@@ -32,7 +32,11 @@ export default function App() {
   const hostRef = useRef(null);
   useEffect(() => {
     const baseScript = document.createElement('script');
-    baseScript.textContent = legacyScript;
+    const adminSupabaseConfig = {
+      url: import.meta.env.VITE_ADMIN_SUPABASE_URL || '',
+      key: import.meta.env.VITE_ADMIN_SUPABASE_ANON_KEY || ''
+    };
+    baseScript.textContent = 'window.__GTG_ADMIN_SUPABASE_CONFIG__ = ' + JSON.stringify(adminSupabaseConfig) + ';' + String.fromCharCode(10) + legacyScript;
     hostRef.current?.appendChild(baseScript);
     const pageScript = document.createElement('script');
     pageScript.textContent = tabOverrides + '\nrender();';

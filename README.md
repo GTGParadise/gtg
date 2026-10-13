@@ -19,3 +19,15 @@ The tab renderer files override the matching render functions in `src/legacy.js`
 4. Run `npm run build` for a production build.
 
 Test all workflows before deploying, especially forms, invoice actions, and Supabase sync.
+
+
+## Separate Supabase projects
+
+The Admin app and Customer website must use different Supabase projects.
+
+- **Admin app** uses `VITE_ADMIN_SUPABASE_URL` and `VITE_ADMIN_SUPABASE_ANON_KEY`.
+- **Customer website** keeps its own `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in the `GTGParadise/gtg-customer` repository/deployment.
+
+For the Admin app, copy `.env.example` to `.env.local` for local development and fill in the URL and publishable/anon key from the **Admin Supabase project only**. Add the same two variables to the Admin app's Vercel project settings and redeploy. Do not commit `.env.local`; do not use a service-role/secret key in the browser. If the Admin environment variables are missing, the app can still show its connection setup form, but its cloud sync will not be connected until the Admin project's details are configured.
+
+These variables configure the Admin app only. They do not connect Website Editor publishing to the Customer database; that requires a separate protected server-side publishing function.
