@@ -36,7 +36,7 @@ export default function App() {
       url: import.meta.env.VITE_ADMIN_SUPABASE_URL || '',
       key: import.meta.env.VITE_ADMIN_SUPABASE_ANON_KEY || ''
     };
-    baseScript.textContent = 'window.__GTG_ADMIN_SUPABASE_CONFIG__ = ' + JSON.stringify(adminSupabaseConfig) + ';\\n' + legacyScript;
+    baseScript.textContent = 'window.__GTG_ADMIN_SUPABASE_CONFIG__ = ' + JSON.stringify(adminSupabaseConfig) + ';' + String.fromCharCode(10) + legacyScript;
     hostRef.current?.appendChild(baseScript);
     const pageScript = document.createElement('script');
     pageScript.textContent = tabOverrides + '\nrender();';
