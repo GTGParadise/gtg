@@ -7,6 +7,8 @@ import MoneyCode from './pages/Money.js?raw';
 import InvoicesCode from './pages/Invoices.js?raw';
 import ActivityCode from './pages/Activity.js?raw';
 import SettingsCode from './pages/Settings.js?raw';
+import WebsiteEditorCode from './pages/WebsiteEditor.js?raw';
+import './styles/website-editor.css';
 import './styles/customers.css';
 import './styles/projects.css';
 import './styles/money.css';
@@ -22,9 +24,9 @@ const tabOverrides = [
   MoneyCode,
   InvoicesCode,
   ActivityCode,
-  SettingsCode
+  SettingsCode,
+  WebsiteEditorCode
 ].join('\n');
-
 // Existing data and interactions remain shared. Each tab renderer is editable separately.
 export default function App() {
   const hostRef = useRef(null);
