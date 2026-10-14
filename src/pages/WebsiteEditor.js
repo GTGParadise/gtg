@@ -38,7 +38,7 @@ function gtgJsonField(key, title, hint) {
 function vWebsiteEditor() {
   const d = GTG_WEBSITE_DRAFT, sections = Object.entries(d.sections || {});
   return '<div class="we-editor">' +
-    '<div class="we-heading"><div><div class="we-eyebrow">GTG PARADISE · WEBSITE CONTROL</div><h2>Website Editor</h2><p>Prepare website content and design settings in one place.</p></div><span class="we-draft-badge">Draft mode</span></div>' +
+    '<div class="we-heading"><div><div class="we-eyebrow">GTG PARADISE · CUSTOMER APP CONTROL</div><h2>Customer App</h2><p>Prepare customer app content and design settings in one place.</p></div><span class="we-draft-badge">Draft mode</span></div>' +
     '<div class="we-notice"><b>Drafts are safe.</b> Save and preview your edits here first. Live publishing is not enabled yet because the customer website uses a separate Supabase project.</div>' +
     '<section class="we-card"><h3>Brand and home page</h3><div class="we-grid">' +
     '<div class="we-field"><label for="we-brand">Website / brand name</label><input id="we-brand" data-we-field="brand" value="' + esc(d.brand || "") + '"></div>' +
@@ -51,15 +51,15 @@ function vWebsiteEditor() {
     '<section class="we-card"><h3>Brand colors</h3><p class="we-muted">Choose colors for the preview. Applying them to the live customer site requires the customer app to read the published settings.</p><div class="we-colors">' +
     [['primary','Forest green'],['accent','Fresh green'],['background','Soft background']].map(([k,l]) => '<label class="we-color" for="we-' + k + '"><span>' + l + '</span><input id="we-' + k + '" type="color" data-we-field="' + k + '" value="' + esc(d[k] || "#14532D") + '"><code>' + esc(d[k] || "") + '</code></label>').join('') +
     '</div></section>' +
-    '<section class="we-card"><h3>Show or hide website sections</h3><div class="we-section-list">' + sections.map(([k,v]) => '<label class="we-toggle"><input type="checkbox" data-we-section="' + esc(k) + '" ' + (v ? "checked" : "") + '><span>' + esc(k.replace(/([A-Z])/g, " $1").replace(/^./, c=>c.toUpperCase())) + '</span></label>').join('') + '</div></section>' +
-    '<section class="we-card"><h3>Website content collections</h3><p class="we-muted">Edit the gallery, services, plants, materials and packages as JSON. Image fields should contain public image URLs. These drafts do not change the customer site until publishing is connected.</p>' +
+    '<section class="we-card"><h3>Show or hide customer app sections</h3><div class="we-section-list">' + sections.map(([k,v]) => '<label class="we-toggle"><input type="checkbox" data-we-section="' + esc(k) + '" ' + (v ? "checked" : "") + '><span>' + esc(k.replace(/([A-Z])/g, " $1").replace(/^./, c=>c.toUpperCase())) + '</span></label>').join('') + '</div></section>' +
+    '<section class="we-card"><h3>Customer app content collections</h3><p class="we-muted">Edit the gallery, services, plants, materials and packages as JSON. Image fields should contain public image URLs. These drafts do not change the customer site until publishing is connected.</p>' +
     gtgJsonField("gallery","Gallery images","Each item can have a title and an image URL.") +
     gtgJsonField("services","Services","Each item should include title and description.") +
     gtgJsonField("plants","Plants","Use the plant fields expected by your customer site, such as name, image, price and description.") +
     gtgJsonField("materials","Materials","Use the materials fields expected by your customer site.") +
     gtgJsonField("packages","Packages","Use the package fields expected by your customer site.") +
     '</section>' +
-    '<div class="we-actions"><button class="btn" data-act="websiteSave">Save draft</button><button class="btn g" data-act="websitePreview">Update preview</button><button class="btn g" data-act="websiteExport">Export JSON</button><button class="btn" data-act="websitePublish">Publish to website</button></div>' +
+    '<div class="we-actions"><button class="btn" data-act="websiteSave">Save draft</button><button class="btn g" data-act="websitePreview">Update preview</button><button class="btn g" data-act="websiteExport">Export JSON</button><button class="btn" data-act="websitePublish">Publish to customer app</button></div>' +
     '<section class="we-card we-preview-card"><div class="we-preview-head"><div><h3>Live-style preview</h3><p class="we-muted">Preview of your draft, not the published customer website.</p></div><span class="we-preview-label">PREVIEW</span></div>' +
     '<div id="we-preview" class="we-preview" style="--we-primary:' + esc(d.primary || "#14532D") + ';--we-accent:' + esc(d.accent || "#65A30D") + ';--we-bg:' + esc(d.background || "#F8FAF5") + '">' + gtgWebsitePreviewHtml(d) + '</div></section>' +
     '</div>';
