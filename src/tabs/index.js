@@ -4,7 +4,7 @@ import MoneyTab from './MoneyTab.jsx';
 import InvoicesTab from './InvoicesTab.jsx';
 import ActivityTab from './ActivityTab.jsx';
 import SettingsTab from './SettingsTab.jsx';
-import WebsiteEditorTab from './WebsiteEditorTab.jsx';
+import CustomerAppTab from './CustomerAppTab.jsx';
 
 /** tab key (engine `tab`) -> component */
 export default {
@@ -14,5 +14,5 @@ export default {
   inv: InvoicesTab,
   act: ActivityTab,
   settings: SettingsTab,
-  website: WebsiteEditorTab
+  website: CustomerAppTab
 };
