@@ -3,7 +3,7 @@
 ## Structure
 - `src/main.jsx` — entry (styles + React root)
 - `src/app.jsx` — React shell (header, nav, active tab, FAB, dialogs) and engine boot
-- `src/tabs/` — one React component per tab: `CustomersTab`, `ProjectsTab`, `MoneyTab`, `InvoicesTab`, `ActivityTab`, `SettingsTab`, `WebsiteEditorTab` (+ `index.js` tab map)
+- `src/tabs/` — one React component per tab: `CustomersTab`, `ProjectsTab`, `MoneyTab`, `InvoicesTab`, `ActivityTab`, `SettingsTab`, `CustomerAppTab` (+ `index.js` tab map)
 - `src/components/` — `Nav.jsx`, `Html.jsx`
 - `src/core/engine.js` — shared state, helpers, forms, invoices, Supabase sync, event handling (the former `app.js` minus the tab renderers)
 - `src/lib/supabase.js`, `src/styles/*`
