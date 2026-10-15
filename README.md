@@ -1,33 +1,15 @@
-# GTG Paradise React app — tab files separated
+# GTG Paradise Admin — React + Vite
 
-This incremental modularization keeps the supplied app's existing UI and shared logic, while placing each main tab renderer in its own editable file.
+## Structure
+- `src/main.jsx` — entry (styles + React root)
+- `src/app.jsx` — React shell (header, nav, active tab, FAB, dialogs) and engine boot
+- `src/tabs/` — one React component per tab: `CustomersTab`, `ProjectsTab`, `MoneyTab`, `InvoicesTab`, `ActivityTab`, `SettingsTab`, `WebsiteEditorTab` (+ `index.js` tab map)
+- `src/components/` — `Nav.jsx`, `Html.jsx`
+- `src/core/engine.js` — shared state, helpers, forms, invoices, Supabase sync, event handling (the former `app.js` minus the tab renderers)
+- `src/lib/supabase.js`, `src/styles/*`
 
-## Tab files
-- `src/pages/Customers.js` + `src/styles/customers.css`
-- `src/pages/Projects.js` + `src/styles/projects.css`
-- `src/pages/Money.js` + `src/styles/money.css`
-- `src/pages/Invoices.js` + `src/styles/invoices.css`
-- `src/pages/Activity.js` + `src/styles/activity.css`
-- `src/pages/Settings.js` + `src/styles/settings.css`
-
-The tab renderer files override the matching render functions in `src/legacy.js`. Shared data, helper functions, event handling, and original styles remain in `src/legacy.js` and `src/legacy.css`; changing shared logic may affect multiple tabs. This is not yet a complete component-by-component React rewrite.
+## How it fits together
+The engine calls `render()` after every change; that notifies React (`useEngine`), which re-renders the nav and the active tab. Tab bodies are still HTML-string templates (`vCust()`, `vMoney()`, …) wrapped by `<Html>`, with the engine's delegated `data-act` handlers. Convert a tab to real JSX one at a time by replacing its template and moving its handlers into the component.
 
 ## Run
-1. Install Node.js 18+.
-2. Run `npm install`.
-3. Run `npm run dev`.
-4. Run `npm run build` for a production build.
-
-Test all workflows before deploying, especially forms, invoice actions, and Supabase sync.
-
-
-## Separate Supabase projects
-
-The Admin app and Customer website must use different Supabase projects.
-
-- **Admin app** uses `VITE_ADMIN_SUPABASE_URL` and `VITE_ADMIN_SUPABASE_ANON_KEY`.
-- **Customer website** keeps its own `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in the `GTGParadise/gtg-customer` repository/deployment.
-
-For the Admin app, copy `.env.example` to `.env.local` for local development and fill in the URL and publishable/anon key from the **Admin Supabase project only**. Add the same two variables to the Admin app's Vercel project settings and redeploy. Do not commit `.env.local`; do not use a service-role/secret key in the browser. If the Admin environment variables are missing, the app can still show its connection setup form, but its cloud sync will not be connected until the Admin project's details are configured.
-
-These variables configure the Admin app only. They do not connect Website Editor publishing to the Customer database; that requires a separate protected server-side publishing function.
+`npm install` → `npm run dev` → `npm run build`. Env vars: see `.env.example`.
