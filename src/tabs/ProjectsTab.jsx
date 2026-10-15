@@ -1,6 +1,11 @@
-import '../styles/projects.css';
 import Html from '../components/Html.jsx';
 import { S, esc, selWork, vWorkOne, workBody, wq } from '../core/engine.js';
+import injectCss from '../components/injectCss.js';
+
+/* ---- styles for this tab ---- */
+const css = String.raw`/* Add styles specific to the Projects tab here. Keep selectors scoped to this tab where possible. */
+`;
+injectCss('projects', css);
 
 function vWork(){
   {const W=S.jobs.find(j=>j.id===selWork);if(W)return vWorkOne(W)}

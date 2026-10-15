@@ -1,6 +1,11 @@
-import '../styles/activity.css';
 import Html from '../components/Html.jsx';
 import { AST, ES, ICD, ICE, S, XB, aStat, aTile, dueTag, esc, jobsSorted, opts, pcode, selAct, tbl, ths } from '../core/engine.js';
+import injectCss from '../components/injectCss.js';
+
+/* ---- styles for this tab ---- */
+const css = String.raw`/* Add styles specific to the Activity tab here. Keep selectors scoped to this tab where possible. */
+`;
+injectCss('activity', css);
 
 function vAct(){
   if(!S.jobs.length)return ES("Add a project first","Money, invoices and activity are tracked for each project.",1);

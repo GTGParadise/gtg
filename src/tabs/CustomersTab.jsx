@@ -1,6 +1,11 @@
-import '../styles/customers.css';
 import Html from '../components/Html.jsx';
 import { AS, ICP, S, XB, acBtns, cq, custFin, custJobs, custList, cview, digits, esc, grid, isAct, num, pcode, selCust, stCls, stat } from '../core/engine.js';
+import injectCss from '../components/injectCss.js';
+
+/* ---- styles for this tab ---- */
+const css = String.raw`/* Add styles specific to the Customers tab here. Keep selectors scoped to this tab where possible. */
+`;
+injectCss('customers', css);
 
 function vCust(){
   const C=S.customers.find(c=>c.id===selCust);

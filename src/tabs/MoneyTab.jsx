@@ -1,6 +1,11 @@
-import '../styles/money.css';
 import Html from '../components/Html.jsx';
 import { col, esc, fdate, num, overview, pFin, pTile, projHead, projs, selProj, sgn, stat, tbl } from '../core/engine.js';
+import injectCss from '../components/injectCss.js';
+
+/* ---- styles for this tab ---- */
+const css = String.raw`/* Add styles specific to the Money tab here. Keep selectors scoped to this tab where possible. */
+`;
+injectCss('money', css);
 
 function vMoney(){
   const P=projs().find(p=>p.id===selProj);

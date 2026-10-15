@@ -1,6 +1,11 @@
-import '../styles/invoices.css';
 import Html from '../components/Html.jsx';
 import { ES, NONE, S, chips, esc, grid, invTile, ivf, pFin, pTile, pfOk, projHead, projs, selProj, upBar } from '../core/engine.js';
+import injectCss from '../components/injectCss.js';
+
+/* ---- styles for this tab ---- */
+const css = String.raw`/* Add styles specific to the Invoices tab here. Keep selectors scoped to this tab where possible. */
+`;
+injectCss('invoices', css);
 
 function vInv(){
   const P=projs().find(p=>p.id===selProj),note=`<div class="note">When an invoice is marked Paid, its amount is added to ${esc(S.cfg.labels.money)} as income.</div>`;

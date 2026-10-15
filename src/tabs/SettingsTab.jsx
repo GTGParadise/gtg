@@ -1,6 +1,11 @@
-import '../styles/settings.css';
 import Html from '../components/Html.jsx';
 import { D, DEF, ICD, SB, SO, esc } from '../core/engine.js';
+import injectCss from '../components/injectCss.js';
+
+/* ---- styles for this tab ---- */
+const css = String.raw`/* Add styles specific to the Settings tab here. Keep selectors scoped to this tab where possible. */
+`;
+injectCss('settings', css);
 
 function vSet(){
   const inp=(p,l)=>{const k=p.split(".");const val=k.length>1?D[k[0]][k[1]]:D[p];return`<div class="f"><label>${esc(l)}</label><input data-d="${p}" value="${esc(val)}"></div>`};
