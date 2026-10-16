@@ -11,7 +11,8 @@ function View() {
   const rev = useEngine();
   const Tab = TABS[engine.tab] || TABS.cust;
   useLayoutEffect(() => { engine.afterCommit(); }, [rev]);
-  return <div id="view" key={rev}><Tab /></div>;
+  // the Customer App tab keeps its login and iframe across engine renders
+  return <div id="view" key={engine.tab === 'website' ? 'website' : rev}><Tab /></div>;
 }
 
 export default function App() {
