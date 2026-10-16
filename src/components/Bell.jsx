@@ -111,7 +111,7 @@ export default function Bell() {
                     <div className="bell-t">{sub ? `🌱 ${i.planName} subscription` : `🛒 Order #${i.ref.slice(-6)}`}</div>
                     <div className="bell-s">{i.name || 'Customer'}{i.phone ? ' · ' + i.phone : ''} · {ago(i.createdAt)}</div>
                     {list.length > 0 && <div className="bell-it">{list.slice(0, 3).join(', ')}{list.length > 3 ? ` +${list.length - 3} more` : ''}</div>}
-                    {i.amount != null && i.amount !== '' && <div className="bell-it"><b>₹{Number(i.amount).toLocaleString('en-IN')}</b>{i.period ? ` / ${i.period}` : ''}</div>}
+                    {Number(i.amount) > 0 && <div className="bell-it"><b>₹{Number(i.amount).toLocaleString('en-IN')}</b>{i.period ? ` / ${i.period}` : ''}</div>}
                     <div className="bell-r">
                       <select value={i.status} aria-label="Status" onChange={(e) => setStatus(i, e.target.value)}>
                         {(sub ? SUB : ORDER).map((s) => <option key={s} value={s}>{s[0].toUpperCase() + s.slice(1)}</option>)}
