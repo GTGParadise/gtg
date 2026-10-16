@@ -19,12 +19,16 @@ injectCss('bell', `
 .bell-t{font-weight:700;font-size:13.5px}.bell-s{font-size:12px;color:#5b7774;margin-top:1px}.bell-it{font-size:12px;margin-top:4px}
 .bell-r{display:flex;gap:8px;align-items:center;margin-top:7px;flex-wrap:wrap}
 .bell-r select{width:auto;padding:4px 6px;font-size:12px;border-radius:8px}.bell-r a{font-size:12px;color:#0f766e;font-weight:600}
+.bell-tl{margin-top:7px;padding-left:8px;border-left:2px solid #bbf7d0;font-size:11.5px;color:#4b635f;line-height:1.55}.bell-tl b{color:#14532d}
 .bell-e{padding:22px 8px;text-align:center;color:#5b7774}
 .bell-f{padding:8px 14px;border-top:1px solid #d8e6dc;font-size:11px;color:#5b7774}
 `);
 
 const ORDER = ['pending', 'confirmed', 'packed', 'shipped', 'delivered', 'cancelled'];
 const SUB = ['pending', 'confirmed', 'active', 'paused', 'cancelled'];
+const ENQ = ['pending', 'confirmed', 'completed', 'cancelled'];
+const LIST = { order: ORDER, subscription: SUB, enquiry: ENQ };
+const stage = (st) => (st === 'pending' ? 'Placed' : st ? st[0].toUpperCase() + st.slice(1) : '');
 const SEEN_KEY = 'gtg_inbox_seen';
 const readSeen = () => { try { return localStorage.getItem(SEEN_KEY) || ''; } catch { return ''; } };
 const ago = (t) => (t ? new Date(t).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }) : '');
@@ -48,8 +52,8 @@ export default function Bell() {
     if (!configured || !SB.on || busy.current || document.hidden) return;
     busy.current = true;
     try {
-      const { orders, subscriptions } = await call('inbox_list');
-      const all = [...(orders || []), ...(subscriptions || [])].sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));
+      const { orders, subscriptions, bookings } = await call('inbox_list');
+      const all = [...(orders || []), ...(subscriptions || []), ...(bookings || [])].sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));
       setItems(all); setErr('');
       ingestAppSubmissions(all); // customer + project, only for things the customer really submitted
     } catch (e) { setErr(e.message || 'Could not load'); }
@@ -82,7 +86,7 @@ export default function Bell() {
   async function setStatus(it, status) {
     const prev = items;
     setItems((l) => l.map((x) => (x.kind === it.kind && x.ref === it.ref ? { ...x, status } : x)));
-    try { await call('set_status', { kind: it.kind, ref: it.ref, status }); toast('Status updated. The customer has been notified.'); }
+    try { await call('set_status', { kind: it.kind, ref: it.ref, status }); toast('Status updated. The customer has been notified.'); refresh(); }
     catch (e) { setItems(prev); toast(e.message || 'Could not update'); }
   }
 
@@ -105,25 +109,28 @@ export default function Bell() {
               {items.map((i) => {
                 const isNew = i.status === 'pending' && String(i.createdAt) > seen;
                 const sub = i.kind === 'subscription';
+                const steps = i.history && i.history.length ? i.history : [{ status: 'pending', at: i.createdAt }];
                 const list = i.items || [];
                 return (
                   <div key={i.kind + i.ref} className={'bell-i' + (isNew ? ' n' : '')}>
-                    <div className="bell-t">{sub ? `🌱 ${i.planName} subscription` : `🛒 Order #${i.ref.slice(-6)}`}</div>
+                    <div className="bell-t">{sub ? `🌱 ${i.planName} subscription` : i.kind === 'enquiry' ? `${i.type === 'package' ? '📦' : '📅'} ${i.title}` : `🛒 Order #${i.ref.slice(-6)}`}</div>
                     <div className="bell-s">{i.name || 'Customer'}{i.phone ? ' · ' + i.phone : ''} · {ago(i.createdAt)}</div>
+                    {i.when && <div className="bell-it">Visit: <b>{i.when}</b></div>}
                     {list.length > 0 && <div className="bell-it">{list.slice(0, 3).join(', ')}{list.length > 3 ? ` +${list.length - 3} more` : ''}</div>}
                     {Number(i.amount) > 0 && <div className="bell-it"><b>₹{Number(i.amount).toLocaleString('en-IN')}</b>{i.period ? ` / ${i.period}` : ''}</div>}
                     <div className="bell-r">
                       <select value={i.status} aria-label="Status" onChange={(e) => setStatus(i, e.target.value)}>
-                        {(sub ? SUB : ORDER).map((s) => <option key={s} value={s}>{s[0].toUpperCase() + s.slice(1)}</option>)}
-                        {![...(sub ? SUB : ORDER)].includes(i.status) && <option value={i.status}>{i.status}</option>}
+                        {LIST[i.kind].map((s) => <option key={s} value={s}>{s[0].toUpperCase() + s.slice(1)}</option>)}
+                        {!LIST[i.kind].includes(i.status) && <option value={i.status}>{i.status}</option>}
                       </select>
                       {wa(i.phone) && <a href={`https://wa.me/${wa(i.phone)}`} target="_blank" rel="noopener noreferrer">WhatsApp</a>}
                     </div>
+                    <div className="bell-tl">{steps.map((h, n) => <div key={n}><b>{stage(h.status)}</b> · {ago(h.at)}</div>)}</div>
                   </div>
                 );
               })}
             </div>
-            <div className="bell-f">New submissions add the customer{' '}(and a project for subscriptions) automatically. Changing a status notifies the customer.</div>
+            <div className="bell-f">New submissions add the customer{' '}(and a project for subscriptions) automatically. Each stage is saved with its date and time, and changing a status notifies the customer.</div>
           </div>
         </div>
       )}
