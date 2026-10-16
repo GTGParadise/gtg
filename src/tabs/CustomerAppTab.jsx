@@ -6,6 +6,7 @@ import { configured, makeApi } from '../customer-app/api.js';
 import { TABLE_SECTIONS } from '../customer-app/spec.js';
 import TableSection from '../customer-app/TableSection.jsx';
 import PackagesSection from '../customer-app/PackagesSection.jsx';
+import PlansSection from '../customer-app/PlansSection.jsx';
 import AboutSection from '../customer-app/AboutSection.jsx';
 import SettingsSection from '../customer-app/SettingsSection.jsx';
 
@@ -45,7 +46,7 @@ injectCss('customer-app', css);
 
 const ADMIN_URL = String(import.meta.env.VITE_ADMIN_SUPABASE_URL || '').trim().replace(/\/+$/, '');
 const ADMIN_KEY = String(import.meta.env.VITE_ADMIN_SUPABASE_ANON_KEY || '').trim();
-const TABS = [...TABLE_SECTIONS.map((s) => [s.key, s.label]), ['packages', 'Packages'], ['about', 'About'], ['settings', 'Settings']];
+const TABS = [...TABLE_SECTIONS.map((s) => [s.key, s.label]), ['plans', 'Plans'], ['packages', 'Packages'], ['about', 'About'], ['settings', 'Settings']];
 
 /**
  * Customer App tab. Asks for the admin login (checked against the ADMIN database), then shows an editor for the
@@ -119,6 +120,7 @@ export default function CustomerAppTab() {
         <button className="cx-btn ghost" onClick={lock}>Lock</button></div>
       <div className="cx-chips">{TABS.map(([k, l]) => <button key={k} className={'cx-chip' + (sec === k ? ' on' : '')} onClick={() => setSec(k)}>{l}</button>)}</div>
       {meta ? <TableSection key={meta.key} meta={meta} api={api} />
+        : sec === 'plans' ? <PlansSection api={api} />
         : sec === 'packages' ? <PackagesSection api={api} />
         : sec === 'about' ? <AboutSection api={api} />
         : <SettingsSection api={api} />}
