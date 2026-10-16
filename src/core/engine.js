@@ -387,7 +387,7 @@ async function saveSettings(){
   if(!await ask("Save these settings?","Yes, save"))return;
   D.cats.forEach(c=>{const n=c.n.trim();if(c.o&&n&&c.o!==n)S.tx.forEach(t=>{const a=cl(t);if(a.includes(c.o))t.cat=a.map(x=>x===c.o?n:x)})});
   const add={};Object.keys(DEF.add).forEach(k=>add[k]=(D.add[k]||"").trim()||DEF.add[k]);
-  S.cfg={appName:(D.appName||"").trim()||DEF.appName,labels:{cust:w("cust"),work:w("work"),money:w("money"),inv:w("inv"),act:w("act"),website:w("website")},add,logo:D.logo||"",mode:"light",accent:DEF.accent,bright:100,cats};
+  S.cfg={appName:(D.appName||"").trim()||DEF.appName,labels:{cust:w("cust"),work:w("work"),money:w("money"),inv:w("inv"),act:w("act"),website:w("website")},add,logo:D.logo||"",mode:"light",accent:DEF.accent,bright:100,cats,inbox:S.cfg.inbox};
   save();closeSettings();
 }
 
@@ -1130,3 +1130,34 @@ load();apply(S.cfg);
 let booted=false;
 function boot(){if(booted)return;booted=true;wireShell();booting=true;try{render()}finally{booting=false}if(supabaseConfigured)initSB();else sbMissingConfig()}
 export { $, AS, AST, BUCKET, CT, D, DEF, ES, F, FLD, H2P, HK, IC, ICD, ICDL, ICE, ICP, ICV, INVDEF, IS, IV, IVBLANK, LOGO0, MON, NONE, P91, PDFJS, PDFW, PFL, PH, PHP, PVD, S, SB, SBT, SO, SV, T12, TERMS_SUPPLY, TERMS_WORK, UPK, UPL, UPQ, WS, XB, aStat, aTile, acBtns, actions, addActForm, addCustForm, addInvForm, addJobForm, addMatForm, addPhotos, addTaskForm, addTxForm, apply, ask, askHTML, autoOf, bizOf, busy, catChk, catFallback, chips, cl, closeSettings, cloudPhDel, cloudPhSet, col, cq, curPh, custFin, custJobs, custList, cview, dataToBlob, digits, drawPrev, dueTag, dupOf, editForm, esc, escRe, fdate, fetchAll, fillFromCust, findDate, fixCodes, fixNums, fld, flt, fsize, gT12, getChk, grid, gv, hide, hlRow, inF, inWords, initSB, invD, invHTML, invMirror, invTile, isAct, isMissingTable, isUp, isoD, ivBuild, ivClose, ivDownload, ivFile, ivFit, ivOpen, ivPdf, ivPrevClose, ivPrevOpen, ivRender, ivSave, ivUpClean, ivUpDone, ivUpForm, ivUpOpen, ivUpPick, ivUpReview, ivf, jn, jobOpts, jobsSorted, known, lastAdded, lastOf, load, loadH2P, loadPdfJs, loadPhLocal, longDate, mEntries, matRows, mergeCfg, mrow, navKey, navSnap, navSync, need, needPh, nextCode, nextInvNo, nextNum, nf, nr, num, okDate, openSettings, opts, overview, pFin, pTile, parseInv, pcode, pdfLimit, pdfReady, pdfText, pfOk, phReq, pk, placeOv, popping, projField, projHead, projs, readImg, readLogo, remPh, render, renderFlt, renderView, restoreBackup, rowsOf, save, saveAct, saveMat, savePhLocal, saveSettings, saveTask, sbApplyNext, sbDeny, sbFetch, sbLoginForm, sbMissingConfig, sbPullNext, sbPush, sbQueue, sbRun, sbStart, sbUpload, sbWatch, selAct, selCust, selProj, selWork, setPath, setStatus, settingsReturnTab, sgn, show, stCls, stLbl, stat, submitAdd, sumA, syncPaid, tab, taskRows, tbl, tfmt, th, ths, tin, tmpPh, toast, today, todayS, txTile, uid, upBar, updDD, v, vWorkOne, wInfo, wf, wireShell, workBody, wq, wtab, notify, subscribe, getRev, setFlush, afterCommit, boot };
+
+/* ---- customer-app submissions -> admin customers / projects ----
+   Called by the bell (src/components/Bell.jsx) with the orders + subscriptions the customer app has submitted.
+   - a customer record is created (or matched by phone / email) only when something was actually submitted
+   - a subscription also creates a project named after the plan; orders create the customer only
+   - S.cfg.inbox.done remembers what was handled (synced with the other settings), so nothing is created twice,
+     and a project you delete later is not recreated */
+function ingestAppSubmissions(items){
+  if(!SB.on||SB.loading||!Array.isArray(items))return 0;
+  const first=!S.cfg.inbox,done=new Set((S.cfg.inbox&&S.cfg.inbox.done)||[]),have=new Set(S.jobs.map(j=>j.source).filter(Boolean));
+  const last10=x=>digits(x).slice(-10),keyOf=it=>"app:"+(it.kind==="order"?"order":"sub")+":"+it.ref;
+  const found=it=>{const p=last10(it.phone),e=String(it.email||"").toLowerCase();
+    return S.customers.find(c=>(p.length===10&&(last10(c.phone)===p||last10(c.whatsapp)===p))||(e&&String(c.email||"").toLowerCase()===e))};
+  let made=0,changed=false;
+  [...items].sort((a,b)=>String(a.createdAt).localeCompare(String(b.createdAt))).forEach(it=>{
+    const key=keyOf(it);if(done.has(key))return;
+    if(have.has(key)||(first&&it.status!=="pending")||it.status==="cancelled"){done.add(key);changed=true;return}  // already handled / old / cancelled
+    let c=found(it);
+    if(!c){const p=last10(it.phone),ph=p.length===10?"+91"+p:"";
+      c={id:uid(),code:nextCode(),name:it.name||String(it.email||"").split("@")[0]||"App customer",phone:ph,whatsapp:ph,email:it.email||"",address:it.location||"",type:"Home",howknown:"Website",notes:"Added automatically from the customer app.",active:true};
+      S.customers.push(c);made++}
+    if(it.kind==="subscription"){
+      const price=it.amount!=null&&it.amount!==""?" · ₹"+Number(it.amount).toLocaleString("en-IN")+(it.period?" / "+it.period:""):"";
+      S.jobs.push({id:uid(),num:nextNum(),name:it.planName+" plan – "+c.name,location:it.location||c.address||"",contact:c.phone||"",email:c.email||"",source:key,status:"Not started",pending:"",next:"",customer:c.id,
+        note:"Customer app subscription: "+it.planName+price+"\nPlants chosen ("+it.items.length+"): "+it.items.join(", ")});
+      have.add(key);made++}
+    done.add(key);changed=true});
+  if(changed){S.cfg.inbox={since:(S.cfg.inbox&&S.cfg.inbox.since)||new Date().toISOString(),done:[...done].slice(-500)};save()}
+  if(made){render();toast(made===1?"New customer-app submission added":made+" customer-app submissions added")}
+  return made}
+export { ingestAppSubmissions };
