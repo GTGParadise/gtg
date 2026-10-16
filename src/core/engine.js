@@ -459,7 +459,7 @@ const actions={
 document.addEventListener("click",e=>{
   document.querySelectorAll("details.dd[open]").forEach(d=>{if(!d.contains(e.target))d.open=false});
   const t=e.target.closest("[data-act]");if(t){if(t.dataset.act==="wopen"&&e.target.closest("input,select,label,button,.nv2"))return;actions[t.dataset.act](t);return}
-  const n=e.target.closest("[data-tab]");if(n){if($("#ov2").classList.contains("on"))$("#no2").click();if(!$("#sbin,#sbsetup"))hide();if(tab==="settings"){apply(S.cfg);D=null}tab=n.dataset.tab;selCust=selProj=selAct=selWork=null;wtab="tasks";wInfo=false;wq="";cview="active";cq="";render();window.scrollTo(0,0)}
+  const n=e.target.closest("[data-tab]");if(n){if($("#ov2").classList.contains("on"))$("#no2").click();if(!$("#sbin,#sbsetup"))hide();if(tab==="settings"){apply(S.cfg);D=null}tab=n.dataset.tab;selCust=selProj=selAct=selWork=selIn=null;wtab="tasks";wInfo=false;wq="";cview="active";cq="";render();window.scrollTo(0,0)}
 });
 document.addEventListener("input",e=>{
   const t=e.target;if(t.classList)t.classList.remove("bad");
@@ -1025,7 +1025,7 @@ const grid=(a,fn,empty)=>a.length?`<div class="pgrid">${a.map(fn).join("")}</div
 const NONE="No records found. Tap + to add one.";
 const CT=["Home","Rooftop","Commercial","Other"];
 const HK=["Referral","Website","Social media","Walk-in","Phone call","Other"];
-let selCust=null,cq="";
+let selCust=null,cq="",selIn=null;
 const digits=x=>String(x||"").replace(/\D/g,"");
 const AS='style="flex:1;display:grid;place-items:center;text-align:center;text-decoration:none;min-height:40px"';
 const custJobs=id=>S.jobs.filter(j=>j.customer===id);
@@ -1087,13 +1087,13 @@ function render(){
   const welcome=$("#welcome");if(welcome){const raw=String(SB.who||"").trim();const name=raw.includes("@")?raw.split("@")[0].replace(/[._-]+/g," ").trim().split(/\s+/)[0]:raw.split(/\s+/)[0];welcome.textContent=SB.on&&name?"Welcome back, "+name.charAt(0).toUpperCase()+name.slice(1)+"!":"Welcome back!";}
   const signoutBtn=$("#signout");if(signoutBtn)signoutBtn.hidden=!SB.on;
   $(".logo").innerHTML=S.cfg.logo?`<img src="${esc(S.cfg.logo)}" alt="">`:LOGO0;
-  $("#fab").style.display=tab==="settings"||tab==="money"||tab==="act"||tab==="website"?"none":"";
+  $("#fab").style.display=tab==="settings"||tab==="money"||tab==="act"||tab==="website"||tab==="inbox"?"none":"";
   $("#fab").setAttribute("aria-label",{work:selWork?(wtab==="mats"?"Add material":"Add task"):"Add project",money:"Add money entry",inv:"Add invoice",act:"Add activity",cust:"Add customer"}[tab]||"Add");
   renderFlt();renderView();
   navSync();
 }
 /* browser / phone back button: step back through app pages instead of leaving */
-const navSnap=()=>({tab,selCust,selProj,selAct,selWork,cview});
+const navSnap=()=>({tab,selCust,selProj,selAct,selWork,selIn,cview});
 let navKey=null,popping=false;
 function navSync(){
   const s=navSnap(),k=JSON.stringify(s);
@@ -1114,10 +1114,14 @@ window.addEventListener("popstate",e=>{
   popping=true;
   try{
     if(s.tab==="settings"){openSettings()}
-    else{tab=s.tab;selCust=s.selCust;selProj=s.selProj;selAct=s.selAct;selWork=s.selWork||null;cview=s.cview||"active";cq="";render()}
+    else{tab=s.tab;selCust=s.selCust;selProj=s.selProj;selAct=s.selAct;selWork=s.selWork||null;selIn=s.selIn||null;cview=s.cview||"active";cq="";render()}
   }finally{popping=false}
   window.scrollTo(0,0);
 });
+/* open one customer-app submission (order / booking / subscription) on its own page */
+function openInbox(kind,ref){if(!$("#sbin,#sbsetup"))hide();tab="inbox";selIn={kind,ref};selCust=selProj=selAct=selWork=null;render();window.scrollTo(0,0)}
+/* jump to a customer or a project page */
+function openRec(t,id){if(!$("#sbin,#sbsetup"))hide();tab=t;selIn=null;selCust=t==="cust"?id:null;selWork=t==="work"?id:null;selProj=selAct=null;wtab="tasks";wInfo=false;cview="active";cq="";render();window.scrollTo(0,0)}
 function wireShell(){$("#fab").onclick=()=>{const pid=selProj&&selProj!=="__none"?selProj:undefined;({work:()=>selWork&&known(selWork)?(wtab==="mats"?addMatForm(selWork):addTaskForm(selWork)):addJobForm(),money:()=>addTxForm(pid),inv:()=>addInvForm(pid),act:()=>addActForm(selAct||undefined),cust:()=>addCustForm()}[tab]||(()=>{}))()};$("#gear").onclick=openSettings;}
 /* ---- React bridge: tabs are React components that re-render when render() calls notify() ---- */
 const subs=new Set();let rev=0,flush=null,booting=false;
@@ -1160,4 +1164,4 @@ function ingestAppSubmissions(items){
   if(changed){S.cfg.inbox={since:(S.cfg.inbox&&S.cfg.inbox.since)||new Date().toISOString(),done:[...done].slice(-500)};save()}
   if(made){render();toast(made===1?"New customer-app submission added":made+" customer-app submissions added")}
   return made}
-export { ingestAppSubmissions };
+export { ingestAppSubmissions, openInbox, openRec, selIn };
