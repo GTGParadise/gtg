@@ -16,6 +16,10 @@ export const SPEC = {
     ['title', 'Title'], ['subtitle', 'Subtitle'], ['body', 'Text (new line = new paragraph)', 'textarea'], ['points', 'Key points (one per line)', 'lines'],
     ['stats', 'Stats as JSON, e.g. [{"value":"500+","label":"Gardens"}]', 'json'], ['image_url', 'Image URL'], ['address', 'Address'], ['email', 'Email'],
     ['phone', 'Phone (10 digits)'], ['whatsapp', 'WhatsApp number'], ['instagram_url', 'Instagram URL'], ['facebook_url', 'Facebook URL'], ['youtube_url', 'YouTube URL']] },
+  subscription_plans: { title: 'Plan', fields: [] },
+  plant_types: { title: 'Category', fields: [
+    ['key', 'Key (must match the plant category exactly)'], ['label', 'Display name'], ['sort_order', 'Sort order (lowest first)', 'number'],
+    ['is_active', 'Show on website', 'check', true]] },
   packages: { title: 'Package', fields: [
     ['name', 'Name'], ['price', 'Price (₹)', 'number'], ['period', 'Period, e.g. /month'], ['features', 'Features (one per line)', 'lines'],
     ['featured', 'Mark as most popular', 'check', false]] },
@@ -27,4 +31,5 @@ export const TABLE_SECTIONS = [
   { key: 'services', label: 'Services', table: 'services', title: 'title', sub: 'description', emoji: '🛠️' },
   { key: 'plants', label: 'Plants', table: 'plants', title: 'name', sub: 'category', price: true, emoji: '🪴' },
   { key: 'materials', label: 'Materials', table: 'materials', title: 'name', sub: 'category', price: true, emoji: '🧰' },
+  { key: 'plant_types', label: 'Categories', table: 'plant_types', title: 'label', sub: 'key', emoji: '🗂️' },
 ];

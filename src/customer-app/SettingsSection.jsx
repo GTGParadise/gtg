@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-const SECTIONS = [['hero', 'Hero banner'], ['gallery', 'Gallery'], ['services', 'Services'], ['packages', 'Maintenance packages'],
+const SECTIONS = [['hero', 'Hero banner'], ['gallery', 'Gallery'], ['services', 'Services'], ['subscriptions', 'Subscription plans'], ['packages', 'Maintenance packages'],
   ['booking', 'Book a visit'], ['about', 'About'], ['plants', 'Plants menu'], ['materials', 'Materials menu']];
 const readB64 = (file) => new Promise((res, rej) => { const r = new FileReader(); r.onerror = rej; r.onload = () => res(String(r.result).split(',')[1]); r.readAsDataURL(file); });
 
