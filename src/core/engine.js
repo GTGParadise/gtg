@@ -1087,7 +1087,7 @@ function render(){
   const welcome=$("#welcome");if(welcome){const raw=String(SB.who||"").trim();const name=raw.includes("@")?raw.split("@")[0].replace(/[._-]+/g," ").trim().split(/\s+/)[0]:raw.split(/\s+/)[0];welcome.textContent=SB.on&&name?"Welcome back, "+name.charAt(0).toUpperCase()+name.slice(1)+"!":"Welcome back!";}
   const signoutBtn=$("#signout");if(signoutBtn)signoutBtn.hidden=!SB.on;
   $(".logo").innerHTML=S.cfg.logo?`<img src="${esc(S.cfg.logo)}" alt="">`:LOGO0;
-  $("#fab").style.display=tab==="settings"||tab==="money"||tab==="act"?"none":"";
+  $("#fab").style.display=tab==="settings"||tab==="money"||tab==="act"||tab==="website"?"none":"";
   $("#fab").setAttribute("aria-label",{work:selWork?(wtab==="mats"?"Add material":"Add task"):"Add project",money:"Add money entry",inv:"Add invoice",act:"Add activity",cust:"Add customer"}[tab]||"Add");
   renderFlt();renderView();
   navSync();
