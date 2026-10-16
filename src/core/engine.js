@@ -1140,7 +1140,7 @@ export { $, AS, AST, BUCKET, CT, D, DEF, ES, F, FLD, H2P, HK, IC, ICD, ICDL, ICE
 function ingestAppSubmissions(items){
   if(!SB.on||SB.loading||!Array.isArray(items))return 0;
   const first=!S.cfg.inbox,done=new Set((S.cfg.inbox&&S.cfg.inbox.done)||[]),have=new Set(S.jobs.map(j=>j.source).filter(Boolean));
-  const last10=x=>digits(x).slice(-10),keyOf=it=>"app:"+(it.kind==="order"?"order":"sub")+":"+it.ref;
+  const last10=x=>digits(x).slice(-10),keyOf=it=>"app:"+(it.kind==="order"?"order":it.kind==="enquiry"?"enq":"sub")+":"+it.ref;
   const found=it=>{const p=last10(it.phone),e=String(it.email||"").toLowerCase();
     return S.customers.find(c=>(p.length===10&&(last10(c.phone)===p||last10(c.whatsapp)===p))||(e&&String(c.email||"").toLowerCase()===e))};
   let made=0,changed=false;
