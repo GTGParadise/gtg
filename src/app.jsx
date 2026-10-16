@@ -3,6 +3,7 @@ import { flushSync } from 'react-dom';
 import * as engine from './core/engine.js';
 import { useEngine } from './useEngine.js';
 import Nav from './components/Nav.jsx';
+import Bell from './components/Bell.jsx';
 import TABS from './tabs/index.js';
 import injectCss from './components/injectCss.js';
 
@@ -29,6 +30,7 @@ export default function App() {
           <div className="bt"><h1 id="ttl" /><div className="tag" id="welcome">Welcome back!</div></div>
         </div>
         <div className="hr">
+          <Bell />
           <button className="gear" id="gear" aria-label="Settings">⚙</button>
           <button className="signout" id="signout" data-act="sbOut" aria-label="Sign out" title="Sign out" hidden>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
