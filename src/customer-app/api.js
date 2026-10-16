@@ -11,7 +11,7 @@ export function makeApi(getToken) {
       body: JSON.stringify({ op, ...payload }),
     });
     const j = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(j.error || 'Request failed (' + res.status + ')');
+    if (!res.ok) throw new Error(j.error || j.message || 'Request failed (' + res.status + ')');
     return j;
   };
 }
