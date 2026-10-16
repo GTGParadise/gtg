@@ -5,6 +5,7 @@ import InvoicesTab from './InvoicesTab.jsx';
 import ActivityTab from './ActivityTab.jsx';
 import SettingsTab from './SettingsTab.jsx';
 import CustomerAppTab from './CustomerAppTab.jsx';
+import InboxTab from './InboxTab.jsx';
 
 /** tab key (engine `tab`) -> component */
 export default {
@@ -14,5 +15,6 @@ export default {
   inv: InvoicesTab,
   act: ActivityTab,
   settings: SettingsTab,
-  website: CustomerAppTab
+  website: CustomerAppTab,
+  inbox: InboxTab
 };
